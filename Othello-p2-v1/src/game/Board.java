@@ -41,6 +41,16 @@ public class Board {
 	public static void main(String[] args) {
 		Board b = new Board();
 		b.draw(b.B);
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				if (!(j == 0 && i == 0)) {
+					System.out.println(i + " + " + j + ": " + b.isValid(5, 4, b.B, i, j));
+					b.gb[5][4].placeDisk(b.B);
+				}
+			}
+		}
+		b.draw(b.W);
+
 	}
 
 	/**
@@ -144,20 +154,27 @@ public class Board {
 	} // end method flipDisks
 
 	private boolean isValid(int x, int y, String colorIn, int dx, int dy) {
-		for (; onBoard(x, y); x += dx, y += dy) {
-			if (gb[x][y].getColor() == colorIn) {
-				xCurr = x;
-				yCurr = y;
+		int currentX = x + dx;
+		int currentY = y + dy;
+		
+		if(onBoard(currentX, currentY) && gb[currentX][currentY].isPlaced())
+			if(gb[currentX][currentY].getColor().equals(colorIn))
+				return false;
+		
+		for (; onBoard(currentX, currentY); currentX += dx, currentY += dy) {
+			if (gb[currentX][currentY].getColor() == colorIn) {
+				xCurr = currentX;
+				yCurr = currentY;
 				return true;
 			}
-			if (gb[x][y].isPlaced() == false)
+			if (gb[currentX][currentY].isPlaced() == false)
 				return false;
 		}
 		return false;
 	} // end method isValid
 
 	private void flip(int x, int y, String colorIn, int cX, int cY, int dx, int dy) {
-		for(;x<cX && y<cY;x+=dx, y+=dy) {
+		for (x += dx, y += dy; x < cX && y < cY; x += dx, y += dy) {
 			gb[x][y].switchColor();
 		}
 	} // end method flip
