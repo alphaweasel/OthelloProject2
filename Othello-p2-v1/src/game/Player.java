@@ -15,8 +15,7 @@ package game;
  *
  */
 public class Player {
-	/*
 	public void getMove(){
 	
-	} */
+	}
 }
