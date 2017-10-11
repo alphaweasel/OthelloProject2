@@ -22,6 +22,8 @@ public class Board {
 	// variables
 	private String turn;
 	private int moveNum = 1;
+	private int xCurr;
+	private int yCurr;
 
 	// data structure to store the locations of the disks
 	private Disk[][] gb = new Disk[ROW][COLUMN];
@@ -135,7 +137,7 @@ public class Board {
 			for (int j = -1; j < 2; j++) {
 				if (i != 0 && j != 0) {
 					if (isValid(xCoord, yCoord, colorIn, i, j))
-						flip(xCoord, yCoord, colorIn, i, j);
+						flip(xCoord, yCoord, colorIn, xCurr, yCurr, i, j);
 				}
 			} // end of j loop
 		} // end of i loop
@@ -143,16 +145,21 @@ public class Board {
 
 	private boolean isValid(int x, int y, String colorIn, int dx, int dy) {
 		for (; onBoard(x, y); x += dx, y += dy) {
-			if (gb[x][y].getColor() == colorIn)
+			if (gb[x][y].getColor() == colorIn) {
+				xCurr = x;
+				yCurr = y;
 				return true;
-			if(gb[x][y].isPlaced() == false)
+			}
+			if (gb[x][y].isPlaced() == false)
 				return false;
 		}
 		return false;
 	} // end method isValid
 
-	private void flip(int x, int y, String colorIn, int dx, int dy) {
-
-	}
+	private void flip(int x, int y, String colorIn, int cX, int cY, int dx, int dy) {
+		for(;x<cX && y<cY;x+=dx, y+=dy) {
+			gb[x][y].switchColor();
+		}
+	} // end method flip
 
 } // end class Board
