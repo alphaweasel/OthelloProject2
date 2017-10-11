@@ -36,14 +36,6 @@ public class Board {
 		initialize();
 	} // end of constructor Board()
 
-	public static void main(String[] args) {
-		Board b = new Board();
-		b.draw(b.B);
-		b.move(5, 4, b.B);
-		b.draw(b.W);
-
-	}
-
 	/**
 	 * Initializes the board
 	 * 
