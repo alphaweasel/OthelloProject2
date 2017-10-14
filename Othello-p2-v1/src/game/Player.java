@@ -19,93 +19,182 @@ import java.util.Scanner;
 public class Player {
 
 	// constants
+	@SuppressWarnings("unused")
 	private final String B = "Black";
+	@SuppressWarnings("unused")
 	private final String W = "White";
 
 	// variables
-	String color;
-	int rowIn;
-	int colIn;
-	int xCoord;
-	int yCoord;
-	String input;
-	String gameMode;
+	int rowIn = -1;
+	int colIn = -1;
+	int xCoord = -1;
+	int yCoord = -1;
 	int simNumber;
+	String input;
+	String color;
 
-	public Player(String colorIn) {
-		color = colorIn;
-	} // end constructor Player(String)
-
-	public void setMode() {
-		Scanner userIn = new Scanner(System.in);
-
-		System.out.println("Select mode: ");
-		System.out.println("Enter \"1p\" for one player, \"2p\" for two player, or a \n"
-				+ "number n to run a simulated game between two bots n times");
-
-		int loop = 1;
-		String mode = null;
-
-		while (loop == 1) {
-			try {
-				mode = userIn.nextLine();
-			} catch (Exception ex) {
-				System.out.println("Invalid, please try again:");
-			} finally {
-				userIn.close();
-			}
-			if (parseMode(mode) != 0)
-				loop = 0;
-		} // end while loop
-		
-		switch(parseMode(mode)) {
-			case -1:
-				gameMode = "1 Player";
-				break;
-			case -2:
-				gameMode = "2 Player";
-				break;
-			default:
-				gameMode = "Simulator";
-				simNumber = parseMode(mode);
-				break;
-		} //end switch statement
-		
-	} // end method setMode
+	public static void main(String[] args) {
+		Board b = new Board();
+		b.draw("White");
+		b.isMove("White");
+		for (int i = 0; i < b.movesW; i++) {
+			System.out.println("X coord at " + (b.possMoveW[0][i] + 1) + ". Y coord at " + (b.possMoveW[1][i] + 1));
+		}
+	}
 
 	public void getMove() {
-		System.out.println("");
+		// variables
+		String move;
+
+		// prints prompt
+		System.out.println("Please enter a move in the form \"column,row\":");
+
+		// loop for valid input
+		do {
+			move = getInput();
+
+			// checks the input to see if a valid move was entered
+			if (move.length() == 3) {
+
+				// check column and set x if column is valid
+				colIn = getInt(move.substring(0, 1));
+				System.out.println("colIn is " + colIn);
+
+				if (colIn != -1 && (1 <= colIn && colIn <= 8))
+					xCoord = colIn - 1;
+				else {
+					System.out.println("Invalid column, please try again:");
+					continue;
+				}
+
+				// check to make sure there is a comma
+				if (move.charAt(1) != ',') {
+					System.out.println("These are not coordinates, please try again:");
+					continue;
+				}
+
+				// check row and set y if row is valid, then break the loop if y is set.
+				rowIn = getInt(move.substring(2));
+				System.out.println("rowIn is " + rowIn);
+
+				if (rowIn != -1 && (1 <= rowIn && rowIn <= 8)) {
+					yCoord = rowIn - 1;
+					break;
+				} else {
+					System.out.println("Invalid row, please try again: ");
+					continue;
+				}
+			} else {
+				System.out.println("Invalid coordinates, please try again:");
+			}
+		} while (true);
 	}
 
-	/**
-	 * Parses the input stringIn and returns a selected mode as an integer
-	 * 
-	 * 0 indicates an invalid mode, negative numbers indicate the amount of players,
-	 * and positive numbers indicate how many times a simulation will be run
-	 * 
-	 * @param stringIn
-	 *            userInput that is parsed for mode information
-	 * @return type int that indicates what mode was selected
-	 */
-	public int parseMode(String stringIn) {
-		int type = 0;
+	public String getMode() {
+		// variables
+		String gameMode = null;
+		String mode;
+		boolean loop = true;
+		int players = 0;
+		int simLoops = 0;
+
+		// prints prompt
+		System.out
+				.println("Enter \"play\" to start a game or \"simulator\" to start a simulated game between two bots:");
+
+		// loop for valid input
+		do {
+			mode = getInput();
+
+			// checks the input to see what mode was selected. If the input is not valid,
+			// print invalid.
+			if (mode.equals("play")) {
+
+				System.out.println("Enter the amount of players (1 or 2): ");
+
+				// loop for valid input
+				do {
+					mode = getInput();
+
+					// if the input is "1" or "2", set the amount of players and exit the loop.
+					// Otherwise, print invalid.
+					if (getInt(mode) == 1 || getInt(mode) == 2) {
+						players = getInt(mode);
+						loop = false;
+						break;
+					} else {
+						System.out.println("Invalid input, please enter either 1 or 2:");
+					}
+				} while (true);
+
+			} else if (mode.equals("simulator")) {
+				System.out.println("Enter the amount of times to run the simulation: ");
+
+				// loop for valid input
+				do {
+					mode = getInput();
+
+					// if the input is an integer greater than 0, set the amount of players and exit
+					// the loop. Otherwise, print invalid.
+					if (getInt(mode) > 0) {
+						simLoops = getInt(mode);
+						loop = false;
+						break;
+					} else {
+						System.out.println("Invalid input, please enter a number greater than 0:");
+					}
+				} while (true);
+			} else {
+				System.out.println("Invalid input, please try again:");
+			}
+
+		} while (loop);
+
+		// sets the gameMode variable depending on what value was changed
+		if (players != 0)
+			gameMode = "p" + String.valueOf(players);
+		else if (simLoops != 0)
+			gameMode = "s" + String.valueOf(simLoops);
+
+		return gameMode;
+	}
+
+	@SuppressWarnings("resource")
+	public String getInput() {
+		// variables
+		Scanner userIn = new Scanner(System.in);
+		String in = null;
+
+		// loop until a valid output is received
+		do {
+			if (userIn.hasNextLine()) {
+				in = userIn.nextLine();
+				break;
+			}
+		} while (true);
+
+		return in;
+	} // end method getInput
+
+	public int getInt(String in) {
+		int out;
 		try {
-			int hopefullyANumber = Integer.parseInt(stringIn);
-			if (hopefullyANumber > 0)
-				type = hopefullyANumber;
+			out = Integer.parseInt(in);
 		} catch (NumberFormatException ex) {
-			type = 0;
+			return -1;
 		}
-
-		if (type == 0) {
-			if (stringIn.equals("p1"))
-				type = -1;
-			else if (stringIn.equals("p2"))
-				type = -2;
-			else
-				type = 0;
-		}
-		return type;
-	}
-
-}
+		if (out > 0)
+			return out;
+		else
+			return -1;
+	} // end method getInt
+	
+	public void setColor(String s) {
+		if(s.equals(W) || s.equals(B))
+			color = s;
+	} //end method setColor
+	
+	public String getColor() {
+		return color;
+	} //end method getColor
+} // end class Player

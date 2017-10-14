@@ -2,8 +2,19 @@ package game;
 
 public class Bot extends Player{
 
-	public Bot(String colorIn) {
-		super(colorIn);
+	//constants
+	private final String B = "Black";
+	private final String W = "White";
+	
+	//variables
+	
+	
+	public Bot() {
+		
+	}
+	
+	public loadPossibleMoves(String colorIn){
+		
 	}
 
 }
