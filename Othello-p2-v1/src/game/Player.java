@@ -19,27 +19,21 @@ import java.util.Scanner;
 public class Player {
 
 	// constants
-	@SuppressWarnings("unused")
 	private final String B = "Black";
-	@SuppressWarnings("unused")
 	private final String W = "White";
 
 	// variables
-	int rowIn = -1;
-	int colIn = -1;
-	int xCoord = -1;
-	int yCoord = -1;
-	int simNumber;
-	String input;
-	String color;
+	private int rowIn = -1;
+	private int colIn = -1;
+	private int xCoord = -1;
+	private int yCoord = -1;
+	private String color;
 
-	public static void main(String[] args) {
-		Board b = new Board();
-		b.draw("White");
-		b.isMove("White");
-		for (int i = 0; i < b.movesW; i++) {
-			System.out.println("X coord at " + (b.possMoveW[0][i] + 1) + ". Y coord at " + (b.possMoveW[1][i] + 1));
-		}
+	public Player() {
+	}
+	
+	public Player(String colorIn) {
+		color = colorIn;
 	}
 
 	public void getMove() {
@@ -47,7 +41,7 @@ public class Player {
 		String move;
 
 		// prints prompt
-		System.out.println("Please enter a move in the form \"column,row\":");
+		System.out.println("Please enter a move in the form \"row,column\":");
 
 		// loop for valid input
 		do {
@@ -188,6 +182,14 @@ public class Player {
 		else
 			return -1;
 	} // end method getInt
+	
+	public int getXCoord() {
+		return xCoord;
+	}
+	
+	public int getYCoord() {
+		return yCoord;
+	}
 	
 	public void setColor(String s) {
 		if(s.equals(W) || s.equals(B))

@@ -7,13 +7,13 @@ public class Bot extends Player{
 	private final String W = "White";
 	
 	//variables
-	
+	int moves[][];
 	
 	public Bot() {
 		
 	}
 	
-	public loadPossibleMoves(String colorIn){
+	public void loadPossibleMoves(String colorIn){
 		
 	}
 

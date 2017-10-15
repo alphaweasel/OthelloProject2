@@ -24,8 +24,8 @@ public class Board {
 	private int moveNum = 1;
 	private int scoreW = 2;
 	private int scoreB = 2;
-	
-	//move lists and current lengths
+
+	// move lists and current lengths
 	int possMoveB[][] = new int[2][64];
 	int movesB;
 	int possMoveW[][] = new int[2][64];
@@ -177,7 +177,7 @@ public class Board {
 				break;
 			else {
 				gb[x][y].switchColor();
-				if(colorIn.equals(B)) {
+				if (colorIn.equals(B)) {
 					scoreB++;
 					scoreW--;
 				} else {
@@ -189,20 +189,20 @@ public class Board {
 
 	public boolean isMove(String colorIn) {
 		boolean flag = false;
-		
-		if(colorIn.equals(W))
+
+		if (colorIn.equals(W))
 			movesW = 0;
 		else
 			movesB = 0;
-		
+
 		for (int r = 0; r < ROW; r++) {
 			for (int c = 0; c < COLUMN; c++) {
 				for (int i = -1; i < 2; i++) {
 					for (int j = -1; j < 2; j++) {
 						if (!(i == 0 && j == 0)) {
-							if(isValid(c,r,colorIn,i,j)) {
+							if (isValid(c, r, colorIn, i, j)) {
 								flag = true;
-								if(colorIn.equals(B)) {
+								if (colorIn.equals(B)) {
 									possMoveB[0][movesB] = r;
 									possMoveB[1][movesB] = c;
 									movesB++;
@@ -210,7 +210,7 @@ public class Board {
 									possMoveW[0][movesW] = r;
 									possMoveW[1][movesW] = c;
 									movesW++;
-								}	
+								}
 							}
 						}
 					}
@@ -218,59 +218,82 @@ public class Board {
 			}
 		}
 		return flag;
-	} //end method isMove
+	} // end method isMove
 
 	public boolean endCheck() {
-		if(isMove(B) && isMove(W))
+		if (isMove(B) && isMove(W))
 			return false;
 		else
 			return true;
-	} //end method endCheck
+	} // end method endCheck
 
-	public String getWinner(){
-		if(scoreB > scoreW)
+	public String getWinner() {
+		if (scoreB > scoreW)
 			return B + " wins with a score of " + scoreB + "! " + W + " had a score of " + scoreW + ".";
 		else
 			return W + " wins with a score of " + scoreW + "! " + B + " had a score of " + scoreB + ".";
-	} //end method getWinner
-	
+	} // end method getWinner
+
 	public void play(String s) {
-		//variables
+		// variables
 		char gameType;
 		int modifier;
-		
-		//start the specified game mode with the modifier as the parameter
+
+		// start the specified game mode with the modifier as the parameter
 		gameType = s.charAt(0);
 		modifier = Integer.parseInt(s.substring(1));
-		
-		if(gameType == 'p')
-			if(modifier == 1)
+
+		if (gameType == 'p')
+			if (modifier == 1)
 				singlePlayer();
 			else
 				multiPlayer();
 		else
 			simulator(modifier);
 	}
-	
+
 	public void simulator(int loops) {
-		for(int i=0;i<loops;i++) {
-			
+		for (int i = 0; i < loops; i++) {
+
 		}
 	}
-	
+
 	public void singlePlayer() {
-		
+
 	}
-	
+
 	public void multiPlayer() {
-		Player p = new Player();
+
+		// objects
+		Player p1 = new Player(B);
+		Player p2 = new Player(W);
 		Board b = new Board();
-		
-		while(!endCheck()) {
-			b.draw(B);
-			
-			
+
+		// main game loop
+		while (!endCheck()) {
+			turn(p1, b);
+			turn(p2, b);
 		}
-	}
-	
+	} // end method multiPlayer
+
+	public void turn(Player p, Board b) {
+		// variables
+		int moved = 0;
+
+		b.draw(p.getColor());
+
+		if (b.isMove(p.getColor())) {
+			do {
+				p.getMove();
+				moved = b.move(p.getXCoord(), p.getYCoord(), p.getColor());
+
+				if (moved == 1)
+					break;
+				else
+					System.out.println("Invalid move location.");
+			} while (true);
+		}
+
+	} // end method turn
+
 } // end class Board

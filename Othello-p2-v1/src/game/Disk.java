@@ -88,8 +88,6 @@ public class Disk {
 	 * 'W' represents "White", 'B' represents "Black", and ' ' represents null a
 	 * Useful for representing the color of the disks in the board class
 	 * 
-	 * @see Board#clear()
-	 * 
 	 * @return returns the character representing the color of a disk
 	 */
 	public char getColorChar() {
