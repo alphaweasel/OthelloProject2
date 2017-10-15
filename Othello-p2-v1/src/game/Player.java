@@ -94,7 +94,7 @@ public class Player {
 
 		// prints prompt
 		System.out
-				.println("Enter \"play\" to start a game or \"simulator\" to start a simulated game between two bots:");
+				.println("Enter \"play\" to start a game or \"sim\" to start a simulated game between two bots:");
 
 		// loop for valid input
 		do {
@@ -121,7 +121,7 @@ public class Player {
 					}
 				} while (true);
 
-			} else if (mode.equals("simulator")) {
+			} else if (mode.equals("sim")) {
 				System.out.println("Enter the amount of times to run the simulation: ");
 
 				// loop for valid input
