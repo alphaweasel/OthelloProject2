@@ -416,7 +416,7 @@ public class Board {
 
 			moved = 1;
 		} else {
-			System.out.println(color + " skips. No possible moves.");
+			
 		}
 
 		return moved;
@@ -434,19 +434,18 @@ public class Board {
 			b1 = new Bot(B);
 			b2 = new Bot(W);
 			b = new Board();
-			b.draw(B);
 			while (true) {
 				b.isMove(B);
-				if (!b.isMove(B) && !b.isMove(W))
+				if (!b.isMove(B) && !b.isMove(W)) {
 					break;
+				}
 				b.turnB(b1, b);
-				b.draw(W);
 				b.turnB(b2, b);
-				b.draw(B);
 				b.updateScore();
 			}
-			System.out.println((i + 1) + "," + (scoreB - scoreW));
-			b.getWinner();
+			//System.out.println("Black's score was " + b.getScore(B) + ". White's score was " + b.getScore(W) + ".");
+			System.out.println((i + 1) + "," + (b.getScore(B) - b.getScore(W)));
+			//b.getWinner();
 		}
 	}
 
@@ -481,5 +480,12 @@ public class Board {
 		else
 			return movesW;
 	} // end method getNumMoves
+	
+	public int getScore(String color) {
+		if(color.equals(B))
+			return scoreB;
+		else
+			return scoreW;
+	}
 
 } // end class Board
