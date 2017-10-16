@@ -22,11 +22,14 @@ public class Bot extends Player{
 	public void loadPossibleMoves(Board b, String colorIn){
 		moves = b.getPossMoves(colorIn);
 		numMoves = b.getNumMoves(colorIn);
+		for(int i = 0; i < numMoves;i++) {
+			System.out.println(i + ": " + (moves[1][i]+1) + "," + (moves[0][i]+1));
+		}
 	}
 	
 	public void getMove() {
 		int randomMove = (int)(Math.random()*numMoves);
-		
+		System.out.println(randomMove);
 		xCoord = moves[0][randomMove];
 		yCoord = moves[1][randomMove];
 	}

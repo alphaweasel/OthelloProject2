@@ -18,8 +18,9 @@ public class Board {
 	private final String BORDER = "  ||===============================||";
 	private final String B = "Black";
 	private final String W = "White";
-	//Maximum amount of moves possible, as some will overlap (8 directions, so 8*64 = 512)
-	private final int MAXPOSS= 512;
+	// Maximum amount of moves possible, as some will overlap (8 directions, so 8*64
+	// = 512)
+	private final int MAXPOSS = 512;
 
 	// variables
 	private String turn;
@@ -101,6 +102,8 @@ public class Board {
 
 		// set turn
 		setTurn(userTurn);
+		//if (moveNum == 20)
+			//Integer.parseInt("pasta");
 		// Draw the move counter and turn indicator
 		System.out.println("     " + turn + "\'s Turn  | Move: " + moveNum++);
 
@@ -120,6 +123,12 @@ public class Board {
 			turn = W;
 	} // end of method setTurn
 
+	/**
+	 * 
+	 * @param xCoord
+	 * @param yCoord
+	 * @return
+	 */
 	public boolean isEmpty(int xCoord, int yCoord) {
 		if (gb[xCoord][yCoord].isPlaced())
 			return false;
@@ -127,77 +136,146 @@ public class Board {
 			return true;
 	} // end method isEmpty
 
+	/**
+	 * 
+	 * @param xCoord
+	 * @param yCoord
+	 * @return
+	 */
 	public boolean onBoard(int xCoord, int yCoord) {
-		if (xCoord < 0 || yCoord < 0 || xCoord > 7 || yCoord > 7)
-			return false;
-		else
+		if ((0 <= xCoord && xCoord <= 7) && (0 <= yCoord && yCoord <= 7))
 			return true;
+		else
+			return false;
 	} // end method offBoard
 
+	/**
+	 * 
+	 * @param xCoord
+	 * @param yCoord
+	 * @param colorIn
+	 * @return
+	 */
 	public int move(int xCoord, int yCoord, String colorIn) {
+		int flag = 0;
+
+		if (gb[xCoord][yCoord].isPlaced())
+			return 0;
+
+		if (moveNum == 8) {
+			@SuppressWarnings("unused")
+			int pasta = 0;
+		}
+
 		for (int i = -1; i < 2; i++) {
 			for (int j = -1; j < 2; j++) {
 				if (!(i == 0 && j == 0)) {
 					if (isValid(xCoord, yCoord, colorIn, i, j)) {
-						if (gb[xCoord][yCoord].isPlaced() == false)
-							gb[xCoord][yCoord].placeDisk(colorIn);
 						flip(xCoord, yCoord, colorIn, i, j);
+						flag = 1;
 					}
 				}
 			} // end of j loop
 		} // end of i loop
 			// returns 1 if a valid move was made, otherwise it returns 0
-		if (gb[xCoord][yCoord].isPlaced())
+		if (flag == 1) {
+			gb[xCoord][yCoord].placeDisk(colorIn);
 			return 1;
-		else
+		} else
 			return 0;
 	} // end method move
 
-	private boolean isValid(int x, int y, String colorIn, int dx, int dy) {
-		
-		if(gb[x][y].isPlaced())
-			return false;
-		
-		int currentX = x + dx;
-		int currentY = y + dy;
-		
-		if (onBoard(currentX, currentY) && gb[currentX][currentY].isPlaced())
-			if (gb[currentX][currentY].getColor().equals(colorIn))
-				return false;
+	private boolean isValid1(int x, int y, String colorIn, int dx, int dy) {
 
-		for (; onBoard(currentX, currentY); currentX += dx, currentY += dy) {
-			if (gb[currentX][currentY].isPlaced() == false)
+		// current x (cX) and current y (cY)
+		int cX = x + dx;
+		int cY = y + dy;
+
+		// checks if the location is on the board
+		if (onBoard(x, y) == false)
+			return false;
+		if (gb[x][y].isPlaced() == true)
+			return false;
+
+		// checks to see if the color of the adjacent disk is the same as the disk being
+		// placed and checks to see if there is a disk adjacent to the disk
+		if (onBoard(cX, cY) == false)
+			return false;
+		if (gb[cX][cY].isPlaced() == false)
+			return false;
+		if (gb[cX][cY].getColor().equals(colorIn))
+			return false;
+
+		// increments the current x and current y values to determine if there is
+		// another disk of the same color (so that a flip can be made) and checks to
+		// make sure there is no empty spaces
+		for (cX += dx, cY += dy; onBoard(cX, cY); cX += dx, cY += dy) {
+			if (gb[cX][cY].isPlaced()) {
+				if (gb[cX][cY].getColor().equals(colorIn)) {
+					return true;
+				}
+			} else {
 				return false;
-			if (gb[currentX][currentY].getColor().equals(colorIn)) {
-				System.out.println("dx is " + dx + " and dy is " + dy + ".");
-				return true;
 			}
 		}
+		// if all the tests return false complete somehow without a return, return false
+		return false;
+	} // end method isValid1
+
+	private boolean isValid(int x, int y, String colorIn, int dx, int dy) {
+		// check to see if the spot is empty
+		if (gb[x][y].isPlaced() == true)
+			return false;
+
+		// create current x and current y variables and increment by dx/dy
+		int cX = x + dx;
+		int cY = y + dy;
+
+		// check to see if the cX and xY variables are on the board
+		if (onBoard(cX, cY) == false)
+			return false;
+
+		//check to see if the new location is empty
+		if(gb[cX][cY].isPlaced() == false)
+			return false;
+		
+		// check to see if the new location is the correct (different) color
+		if(gb[cX][cY].getColor().equals(colorIn))
+			return false;
+
+		//check in a direction
+		for(cX += dx, cY += dy;onBoard(cX,cY);cX += dx, cY += dy) {
+			if(gb[cX][cY].isPlaced() == false)
+				return false;
+			if(gb[cX][cY].getColor().equals(colorIn))
+				return true;
+		}
+		
 		return false;
 	} // end method isValid
 
+	// checks along a specific direction (given by dx and dy) for flips. Flips any
+	// disk of the other color until it hits a disk of the same color, then the loop
+	// is broken
 	private void flip(int x, int y, String colorIn, int dx, int dy) {
-		for (x += dx, y += dy; onBoard(x, y); x += dx, y += dy)
-			if (gb[x][y].getColor() == colorIn)
+		for (x += dx, y += dy; onBoard(x, y); x += dx, y += dy) {
+			if (gb[x][y].getColor().equals(colorIn))
 				break;
-			else {
+			else
 				gb[x][y].switchColor();
-				if (colorIn.equals(B)) {
-					scoreB++;
-					scoreW--;
-				} else {
-					scoreW++;
-					scoreB--;
-				}
-			}
-	} // end method flip
+		}
+	}
 
+	/**
+	 * 
+	 * @param colorIn
+	 * @param mode
+	 * @return
+	 */
 	public boolean isMove(String colorIn) {
 		boolean flag = false;
 		possMoveB = new int[2][MAXPOSS];
 		possMoveW = new int[2][MAXPOSS];
-		movesW = 0;
-		movesB = 0;
 
 		if (colorIn.equals(W))
 			movesW = 0;
@@ -212,12 +290,12 @@ public class Board {
 							if (isValid(c, r, colorIn, i, j)) {
 								flag = true;
 								if (colorIn.equals(B)) {
-									possMoveB[0][movesB] = r;
-									possMoveB[1][movesB] = c;
+									possMoveB[0][movesB] = c;
+									possMoveB[1][movesB] = r;
 									movesB++;
 								} else {
-									possMoveW[0][movesW] = r;
-									possMoveW[1][movesW] = c;
+									possMoveW[0][movesW] = c;
+									possMoveW[1][movesW] = r;
 									movesW++;
 								}
 							}
@@ -229,20 +307,53 @@ public class Board {
 		return flag;
 	} // end method isMove
 
+	/**
+	 * 
+	 * @param b
+	 * @return
+	 */
 	public boolean isEnd(Board b) {
-		if (!(b.isMove(B) && b.isMove(W)))
+		if ((!b.isMove(W) && !b.isMove(B)))
 			return true;
 		else
 			return false;
 	} // end method endCheck
 
+	/**
+	 * 
+	 */
+	public void updateScore() {
+		scoreB = 0;
+		scoreW = 0;
+		for (int r = 0; r < ROW; r++) {
+			for (int c = 0; c < COLUMN; c++) {
+				if (gb[r][c].isPlaced()) {
+					if (gb[r][c].getColor().equals(B))
+						scoreB++;
+					if (gb[r][c].getColor().equals(W))
+						scoreW++;
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	public String getWinner() {
 		if (scoreB > scoreW)
 			return B + " wins with a score of " + scoreB + "! " + W + " had a score of " + scoreW + ".";
+		else if (scoreB == scoreW)
+			return "Tie.  Both players ended with a score of " + scoreB;
 		else
 			return W + " wins with a score of " + scoreW + "! " + B + " had a score of " + scoreB + ".";
 	} // end method getWinner
 
+	/**
+	 * 
+	 * @param s
+	 */
 	public void play(String s) {
 		// variables
 		char gameType;
@@ -259,104 +370,99 @@ public class Board {
 				multiPlayer();
 		else
 			simulator(modifier);
-	}
+	} // end method play
 
-	public void simulator(int loops) {
-		//objects
-		Bot b1 = new Bot(B);
-		Bot b2 = new Bot(W);
-		Board b = new Board();
-		
-		//loop variable
-		boolean loop = true;
-		
-		//run loops game(s) between two bots
-		for (int i = 0; i < loops; i++) {
-			loop = true;
-			do{
-				if(isEnd(b)) {
-					loop = false;
-				}
-				turnB(b1, b);
-				turnB(b2, b);
-				
-				
-			}while(loop);
-			System.out.println(scoreB-scoreW);
-			getWinner();
+	private int turn(Player player, Board board) {
+		// variables
+		int moved = 0;
+		String color = player.getColor();
+
+		// draw the board
+		board.draw(color);
+
+		// if there is possible moves, ask for a move. Otherwise skip.
+		if (board.isMove(color)) {
+			int isAMove = 0;
+			do {
+				// get a move and try to move
+				player.getMove();
+				moved = board.move(player.getXCoord(), player.getYCoord(), color);
+
+				// if the move was successful, break the loop. Otherwise continue the loop
+				if (moved == 1)
+					isAMove = 1;
+				else
+					System.out.println("Invalid move location.");
+			} while (isAMove == 0);
+		} else {
+			System.out.println(color + " skips. No possible moves.");
 		}
+
+		return moved;
 	}
 
-	public void singlePlayer() {
+	private int turnB(Bot bot, Board board) {
+		// variables
+		int moved = 0;
+		String color = bot.getColor();
 
+		if (board.isMove(color)) {
+			// load moves and randomly select one
+			bot.loadPossibleMoves(board, color);
+			bot.getMove();
+
+			// move
+			board.move(bot.getXCoord(), bot.getYCoord(), color);
+
+			moved = 1;
+		} else {
+			System.out.println(color + " skips. No possible moves.");
+		}
+
+		return moved;
 	}
 
-	public void multiPlayer() {
-		//variables
-		int skips;
-		
+	private void simulator(int simLoops) {
 		// objects
-		Player p1 = new Player(B);
-		Player p2 = new Player(W);
-		Board b = new Board();
+		Bot b1;
+		Bot b2;
+		Board b;
 
-		// main game loop
-		do {
-			skips = 0;
-			skips += turn(p1,b);
-			skips += turn(p2,b);
-			if(skips == 2)
-				break;
-		} while(true);
-	} // end method multiPlayer
-
-	public int turn(Player p, Board b) {
-		// variables
-		int moved = 0;
-
-		b.draw(p.getColor());
-
-		if (b.isMove(p.getColor())) {
-			do {
-				p.getMove();
-				moved = b.move(p.getXCoord(), p.getYCoord(), p.getColor());
-
-				if (moved == 1)
+		// run simLoops game(s) between the two bots b1 and b2
+		for (int i = 0; i < simLoops; i++) {
+			// reset the objects for every game
+			b1 = new Bot(B);
+			b2 = new Bot(W);
+			b = new Board();
+			b.draw(B);
+			while (true) {
+				b.isMove(B);
+				if (!b.isMove(B) && !b.isMove(W))
 					break;
-				else
-					System.out.println("Invalid move location.");
-			} while (true);
-		} else {
-			System.out.println(p.getColor() + " skips.  No possible moves.");
-			return 1;
+				b.turnB(b1, b);
+				b.draw(W);
+				b.turnB(b2, b);
+				b.draw(B);
+				b.updateScore();
+			}
+			System.out.println((i + 1) + "," + (scoreB - scoreW));
+			b.getWinner();
 		}
-		return 0;
-	} // end method turn
-	
-	public int turnB(Bot b1, Board b) {
-		// variables
-		int moved = 0;
+	}
 
-		b.draw(b1.getColor());
+	private void singlePlayer() {
 
-		if (b.isMove(b1.getColor())) {
-			do {
-				b1.loadPossibleMoves(b, b1.getColor());
-				b1.getMove();
-				moved = b.move(b1.getYCoord(), b1.getXCoord(), b1.getColor());
+	}
 
-				if (moved == 1)
-					break;
-				else
-					System.out.println("Invalid move location.");
-			} while (true);
-		} else {
-			System.out.println(b1.getColor() + " skips.  No possible moves.");
-			return 1;
-		}
-		return 0;
-	} // end method turn
+	private void multiPlayer() {
 
+	}
+
+	/**
+	 * 
+	 * @param color
+	 * @return
+	 */
 	public int[][] getPossMoves(String color) {
 		if (color.equals(B))
 			return possMoveB;
@@ -364,6 +470,11 @@ public class Board {
 			return possMoveW;
 	} // end method getPossMoves
 
+	/**
+	 * 
+	 * @param color
+	 * @return
+	 */
 	public int getNumMoves(String color) {
 		if (color.equals(B))
 			return movesB;
