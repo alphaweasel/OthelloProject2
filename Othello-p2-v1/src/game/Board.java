@@ -102,8 +102,8 @@ public class Board {
 
 		// set turn
 		setTurn(userTurn);
-		//if (moveNum == 20)
-			//Integer.parseInt("pasta");
+		// if (moveNum == 20)
+		// Integer.parseInt("pasta");
 		// Draw the move counter and turn indicator
 		System.out.println("     " + turn + "\'s Turn  | Move: " + moveNum++);
 
@@ -124,10 +124,13 @@ public class Board {
 	} // end of method setTurn
 
 	/**
+	 * Checks to see if the location is empty
 	 * 
 	 * @param xCoord
+	 *            X coordinate of the location
 	 * @param yCoord
-	 * @return
+	 *            Y coordinate of the location
+	 * @return true if the location is empty, false if the location has a disk
 	 */
 	public boolean isEmpty(int xCoord, int yCoord) {
 		if (gb[xCoord][yCoord].isPlaced())
@@ -137,10 +140,14 @@ public class Board {
 	} // end method isEmpty
 
 	/**
+	 * Checks to see if a location is on the gameboard
 	 * 
 	 * @param xCoord
+	 *            X coordinate of the location
 	 * @param yCoord
-	 * @return
+	 *            Y coordinate of the location
+	 * @return true if the location is on the board, false if the location is off
+	 *         the board
 	 */
 	public boolean onBoard(int xCoord, int yCoord) {
 		if ((0 <= xCoord && xCoord <= 7) && (0 <= yCoord && yCoord <= 7))
@@ -150,11 +157,16 @@ public class Board {
 	} // end method offBoard
 
 	/**
+	 * Attempts to make a move at the given location, then returns an integer
+	 * depending on if the move was successful
 	 * 
 	 * @param xCoord
+	 *            X coordinate of the location
 	 * @param yCoord
+	 *            Y coordinate of the location
 	 * @param colorIn
-	 * @return
+	 *            color of the actor
+	 * @return 1 when the move was successful and 0 if the move was not
 	 */
 	public int move(int xCoord, int yCoord, String colorIn) {
 		int flag = 0;
@@ -185,43 +197,8 @@ public class Board {
 			return 0;
 	} // end method move
 
-	private boolean isValid1(int x, int y, String colorIn, int dx, int dy) {
-
-		// current x (cX) and current y (cY)
-		int cX = x + dx;
-		int cY = y + dy;
-
-		// checks if the location is on the board
-		if (onBoard(x, y) == false)
-			return false;
-		if (gb[x][y].isPlaced() == true)
-			return false;
-
-		// checks to see if the color of the adjacent disk is the same as the disk being
-		// placed and checks to see if there is a disk adjacent to the disk
-		if (onBoard(cX, cY) == false)
-			return false;
-		if (gb[cX][cY].isPlaced() == false)
-			return false;
-		if (gb[cX][cY].getColor().equals(colorIn))
-			return false;
-
-		// increments the current x and current y values to determine if there is
-		// another disk of the same color (so that a flip can be made) and checks to
-		// make sure there is no empty spaces
-		for (cX += dx, cY += dy; onBoard(cX, cY); cX += dx, cY += dy) {
-			if (gb[cX][cY].isPlaced()) {
-				if (gb[cX][cY].getColor().equals(colorIn)) {
-					return true;
-				}
-			} else {
-				return false;
-			}
-		}
-		// if all the tests return false complete somehow without a return, return false
-		return false;
-	} // end method isValid1
-
+	// checks to see if a move is valid for player colorIn starting at location
+	// (x,y) and moving in direction dx,dy
 	private boolean isValid(int x, int y, String colorIn, int dx, int dy) {
 		// check to see if the spot is empty
 		if (gb[x][y].isPlaced() == true)
@@ -235,22 +212,22 @@ public class Board {
 		if (onBoard(cX, cY) == false)
 			return false;
 
-		//check to see if the new location is empty
-		if(gb[cX][cY].isPlaced() == false)
-			return false;
-		
-		// check to see if the new location is the correct (different) color
-		if(gb[cX][cY].getColor().equals(colorIn))
+		// check to see if the new location is empty
+		if (gb[cX][cY].isPlaced() == false)
 			return false;
 
-		//check in a direction
-		for(cX += dx, cY += dy;onBoard(cX,cY);cX += dx, cY += dy) {
-			if(gb[cX][cY].isPlaced() == false)
+		// check to see if the new location is the correct (different) color
+		if (gb[cX][cY].getColor().equals(colorIn))
+			return false;
+
+		// check in a direction
+		for (cX += dx, cY += dy; onBoard(cX, cY); cX += dx, cY += dy) {
+			if (gb[cX][cY].isPlaced() == false)
 				return false;
-			if(gb[cX][cY].getColor().equals(colorIn))
+			if (gb[cX][cY].getColor().equals(colorIn))
 				return true;
 		}
-		
+
 		return false;
 	} // end method isValid
 
@@ -264,24 +241,33 @@ public class Board {
 			else
 				gb[x][y].switchColor();
 		}
-	}
+	} // end method flip
 
 	/**
+	 * Checks to see if there is any valid moves for the player colorIn and records
+	 * all valid moves
+	 * 
+	 * Valid moves for white are recorded in possMoveW[][], where possMoveW[0] is an
+	 * x value and possMoveW[1] is a y value. The total amount of moves for white is
+	 * given by movesW. Black has the same structure, but it instead uses
+	 * possMoveB[][] and movesB
 	 * 
 	 * @param colorIn
-	 * @param mode
-	 * @return
+	 *            color of the actor
+	 * @return true if there is a possible move, false if there is no possible moves
 	 */
 	public boolean isMove(String colorIn) {
 		boolean flag = false;
 		possMoveB = new int[2][MAXPOSS];
 		possMoveW = new int[2][MAXPOSS];
 
+		// resets the move counter for color colorIn
 		if (colorIn.equals(W))
 			movesW = 0;
 		else
 			movesB = 0;
 
+		// loops through all possible moves and checks to see if any are valid
 		for (int r = 0; r < ROW; r++) {
 			for (int c = 0; c < COLUMN; c++) {
 				for (int i = -1; i < 2; i++) {
@@ -308,9 +294,13 @@ public class Board {
 	} // end method isMove
 
 	/**
+	 * Checks to see if an end game condition has been met
+	 * 
+	 * The game end condition is both players must have no possible moves
 	 * 
 	 * @param b
-	 * @return
+	 *            board of the current game
+	 * @return true if the game has ended, false if the game continues
 	 */
 	public boolean isEnd(Board b) {
 		if ((!b.isMove(W) && !b.isMove(B)))
@@ -320,7 +310,7 @@ public class Board {
 	} // end method endCheck
 
 	/**
-	 * 
+	 * Updates the score of both players
 	 */
 	public void updateScore() {
 		scoreB = 0;
@@ -335,24 +325,32 @@ public class Board {
 				}
 			}
 		}
-	}
+	} // end method updateScore
 
 	/**
+	 * Determines the winner of the game
 	 * 
-	 * @return
+	 * @param b
+	 *            board of the current game
+	 * @return a string indicating the winner of the game
 	 */
-	public String getWinner() {
-		if (scoreB > scoreW)
-			return B + " wins with a score of " + scoreB + "! " + W + " had a score of " + scoreW + ".";
-		else if (scoreB == scoreW)
-			return "Tie.  Both players ended with a score of " + scoreB;
+	public String getWinner(Board b) {
+		if (b.getScore(B) > b.getScore(W))
+			return B + " wins with a score of " + b.getScore(B) + "! " + W + " had a score of " + b.getScore(W) + ".";
+		else if (b.getScore(B) == b.getScore(W))
+			return "Tie.  Both players ended with a score of " + b.getScore(B);
 		else
-			return W + " wins with a score of " + scoreW + "! " + B + " had a score of " + scoreB + ".";
+			return W + " wins with a score of " + b.getScore(W) + "! " + B + " had a score of " + b.getScore(B) + ".";
 	} // end method getWinner
 
 	/**
+	 * Plays Othello
+	 * 
+	 * Selects between the 3 gamemodes (singleplayer, multiplayer, simulator) based
+	 * on the input
 	 * 
 	 * @param s
+	 *            contains the gamemode information
 	 */
 	public void play(String s) {
 		// variables
@@ -372,6 +370,7 @@ public class Board {
 			simulator(modifier);
 	} // end method play
 
+	// completes a turn for a (human) player
 	private int turn(Player player, Board board) {
 		// variables
 		int moved = 0;
@@ -401,6 +400,7 @@ public class Board {
 		return moved;
 	}
 
+	// completes a turn for the bot
 	private int turnB(Bot bot, Board board) {
 		// variables
 		int moved = 0;
@@ -416,16 +416,17 @@ public class Board {
 
 			moved = 1;
 		} else {
-			
+
 		}
 
 		return moved;
 	}
 
+	// simulator gamemode
 	private void simulator(int simLoops) {
-		//variables
+		// variables
 		int[] spreads = new int[simLoops];
-		
+
 		// objects
 		Bot b1;
 		Bot b2;
@@ -438,7 +439,6 @@ public class Board {
 			b2 = new Bot(W);
 			b = new Board();
 			while (true) {
-				b.isMove(B);
 				if (!b.isMove(B) && !b.isMove(W)) {
 					break;
 				}
@@ -446,22 +446,88 @@ public class Board {
 				b.turnB(b2, b);
 				b.updateScore();
 			}
-			spreads[i] = b.getScore(B)-b.getScore(W);
+			spreads[i] = b.getScore(B) - b.getScore(W);
 		}
-	} //end method simulator
-
-	private void singlePlayer() {
-
-	}
-
-	private void multiPlayer() {
-
-	}
+		processSpreadData(spreads);
+	} // end method simulator
 
 	/**
+	 * Processes the data within the input array and finds the occurrence of each
+	 * spread
+	 * 
+	 * @param spreads
+	 *            array containing the spreads to process
+	 */
+	public void processSpreadData(int[] spreads) {
+		int[] occur = new int[129];
+		int count;
+
+		// make an array of spread occurrences, where the index is the spread+64
+		for (int i = -64; i < 65; i++) {
+			count = 0;
+			for (int spread : spreads) {
+				if (spread == i)
+					count++;
+			}
+			occur[(i + 64)] = count;
+		}
+
+		System.out.println("Spread\tOccurrences");
+
+		int spreadNum;
+		for (int i = 0; i < occur.length; i++) {
+			spreadNum = i - 64;
+			System.out.println(spreadNum + "\t" + occur[i]);
+		}
+	} // end method processSpreadData
+
+	// singleplayer gamemode
+	private void singlePlayer() {
+		// objects
+		Player player = new Player(B);
+		Bot bot = new Bot(W);
+		Board board = new Board();
+
+		// run main game loop
+		while (true) {
+			if (!board.isMove(B) && !board.isMove(W)) {
+				break;
+			}
+			board.turn(player, board);
+			board.draw(bot.getColor());
+			board.turnB(bot, board);
+			board.updateScore();
+
+		}
+		getWinner(board);
+	} // end method singlePlayer
+
+	// multiplayer gamemode
+	private void multiPlayer() {
+		// objects
+		Player p1 = new Player(B);
+		Player p2 = new Player(W);
+		Board board = new Board();
+
+		// run main game loop
+		while (true) {
+			if (!board.isMove(B) && !board.isMove(W)) {
+				break;
+			}
+			board.turn(p1, board);
+			board.turn(p2, board);
+			board.updateScore();
+
+		}
+		getWinner(board);
+	} // end method multiPlayer
+
+	/**
+	 * Returns the array containing all possible moves for player color
 	 * 
 	 * @param color
-	 * @return
+	 *            determines which set of moves to return
+	 * @return possMoveB if color is Black, possMoveW if color is White
 	 */
 	public int[][] getPossMoves(String color) {
 		if (color.equals(B))
@@ -471,9 +537,11 @@ public class Board {
 	} // end method getPossMoves
 
 	/**
+	 * Returns the number of possible moves for player color
 	 * 
 	 * @param color
-	 * @return
+	 *            determines which total of moves to return
+	 * @return movesB if color is Black, movesW if color is White
 	 */
 	public int getNumMoves(String color) {
 		if (color.equals(B))
@@ -481,12 +549,19 @@ public class Board {
 		else
 			return movesW;
 	} // end method getNumMoves
-	
+
+	/**
+	 * Returns the score of player color
+	 * 
+	 * @param color
+	 *            determines which score to return
+	 * @return scoreB if color is Black, scoreW if color is White
+	 */
 	public int getScore(String color) {
-		if(color.equals(B))
+		if (color.equals(B))
 			return scoreB;
 		else
 			return scoreW;
-	}
+	} // end method getScore
 
 } // end class Board
