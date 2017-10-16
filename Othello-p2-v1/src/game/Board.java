@@ -423,6 +423,9 @@ public class Board {
 	}
 
 	private void simulator(int simLoops) {
+		//variables
+		int[] spreads = new int[simLoops];
+		
 		// objects
 		Bot b1;
 		Bot b2;
@@ -443,11 +446,9 @@ public class Board {
 				b.turnB(b2, b);
 				b.updateScore();
 			}
-			//System.out.println("Black's score was " + b.getScore(B) + ". White's score was " + b.getScore(W) + ".");
-			System.out.println((i + 1) + "," + (b.getScore(B) - b.getScore(W)));
-			//b.getWinner();
+			spreads[i] = b.getScore(B)-b.getScore(W);
 		}
-	}
+	} //end method simulator
 
 	private void singlePlayer() {
 
